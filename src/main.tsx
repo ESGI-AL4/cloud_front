@@ -9,6 +9,9 @@ import "primereact/resources/primereact.min.css"; //core css
 import "primeicons/primeicons.css"; //icons
 import "primeflex/primeflex.css"; //flex
 
+// Import de Firebase pour l'initialisation
+import './firebase';
+
 createRoot(document.getElementById('root')!).render(
     <AuthProvider>
         <React.StrictMode>
