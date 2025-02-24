@@ -11,7 +11,7 @@ const TestComponent: React.FC = () => {
             <div data-testid="user">{user ? user.name : "null"}</div>
             <button
                 data-testid="login-btn"
-                onClick={() => login({ name: "testuser", email: "testuser@example.com" })}
+                onClick={() => login({id: "", alarm: "", name: "testuser", email: "testuser@example.com" })}
             >
                 Login
             </button>
