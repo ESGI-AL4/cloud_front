@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import './ActionButtons.css';
+import { useAlarm } from '../../hooks/useAlarm';
+import { AuthContext } from '../../contexts/AuthContext';
 
 interface ActionButtonsProps {
     onScheduleNotifications: () => void;
@@ -15,6 +17,19 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
                                                          onAddCard,
                                                          onAllCards,
                                                      }) => {
+    const { user } = useContext(AuthContext);
+    const { getAlarm, loading, error } = useAlarm();
+    const [alarmTime, setAlarmTime] = useState<string | null>(null);
+
+    // Au montage, si l'utilisateur est connecté, on récupère son alarme via son email.
+    useEffect(() => {
+        if (user?.email) {
+            getAlarm(user.email)
+                .then((data: { alarm: React.SetStateAction<string | null>; }) => setAlarmTime(data.alarm))
+                .catch((err: any) => console.error(err));
+        }
+    }, [user, getAlarm]);
+
     return (
         <div className="action-buttons">
             <Button
@@ -36,6 +51,14 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
                 onClick={onStartQuiz}
             />
             <Button label="Ajouter une carte" icon="pi pi-plus" onClick={onAddCard} />
+
+            {loading && <p>Chargement de l'alarme...</p>}
+            {error && <p style={{ color: 'red' }}>Erreur: {error}</p>}
+            {alarmTime && (
+                <div style={{ marginTop: '10px' }}>
+                    <p>Notification programmée à : {alarmTime}</p>
+                </div>
+            )}
         </div>
     );
 };

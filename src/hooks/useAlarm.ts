@@ -7,15 +7,14 @@ export const useAlarm = () => {
     const [error, setError] = useState<string | null>(null);
     const backUrl = import.meta.env.VITE_BACK_URL;
 
-    const scheduleAlarm = async (time: string) => {
+    const scheduleAlarm = async (time: string, email: string) => {
         setLoading(true);
         setError(null);
         try {
-            // Remplacez par l'URL réelle de votre API
-            const response = await axios.post(`${backUrl}/alarm`, { time });
+            const response = await axios.post(`${backUrl}/alarm`, { email, time });
             return response.data;
         } catch (err: any) {
-            console.error("Erreur dans useAlarm:", err);
+            console.error("Erreur dans scheduleAlarm:", err);
             setError(err.message || 'Erreur lors de la programmation de la notification');
             throw err;
         } finally {
@@ -23,5 +22,20 @@ export const useAlarm = () => {
         }
     };
 
-    return { scheduleAlarm, loading, error };
+    const getAlarm = async (email: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(`${backUrl}/alarm`, { params: { email } });
+            return response.data;
+        } catch (err: any) {
+            console.error("Erreur dans getAlarm:", err);
+            setError(err.message || 'Erreur lors de la récupération de l’alarme');
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { scheduleAlarm, getAlarm, loading, error };
 };
