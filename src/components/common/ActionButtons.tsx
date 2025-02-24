@@ -18,7 +18,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
                                                          onAllCards,
                                                      }) => {
     const { user } = useContext(AuthContext);
-    const { getAlarm, loading, error } = useAlarm();
+    const { getAlarm, error } = useAlarm();
     const [alarmTime, setAlarmTime] = useState<string | null>(null);
 
     // Au montage, si l'utilisateur est connecté, on récupère son alarme via son email.
@@ -52,7 +52,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
             />
             <Button label="Ajouter une carte" icon="pi pi-plus" onClick={onAddCard} />
 
-            {loading && <p>Chargement de l'alarme...</p>}
             {error && <p style={{ color: 'red' }}>Erreur: {error}</p>}
             {alarmTime && (
                 <div style={{ marginTop: '10px' }}>
