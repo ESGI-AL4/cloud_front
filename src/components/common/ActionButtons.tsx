@@ -21,14 +21,14 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     const { getAlarm, error } = useAlarm();
     const [alarmTime, setAlarmTime] = useState<string | null>(null);
 
-    // Au montage, si l'utilisateur est connecté, on récupère son alarme via son email.
+    // Appel unique pour récupérer l'alarme si l'utilisateur est connecté et si alarmTime n'est pas encore défini
     useEffect(() => {
-        if (user?.email) {
+        if (user?.email && !alarmTime) {
             getAlarm(user.email)
-                .then((data: { alarm: React.SetStateAction<string | null>; }) => setAlarmTime(data.alarm))
+                .then((data: { alarm: string | null }) => setAlarmTime(data.alarm))
                 .catch((err: any) => console.error(err));
         }
-    }, [user, getAlarm]);
+    }, [user, alarmTime, getAlarm]);
 
     return (
         <div className="action-buttons">
