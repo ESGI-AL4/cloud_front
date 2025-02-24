@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { AuthContext, AuthContextType } from './AuthContext';
+import { AuthContext, User, AuthContextType } from './AuthContext';
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
-    const login = (username: string) => {
-        setUser(username);
+    const login = (user: User) => {
+        setUser(user);
     };
 
     const logout = () => {

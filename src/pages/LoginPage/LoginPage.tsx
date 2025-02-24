@@ -2,30 +2,33 @@
 import React, { useState, useContext } from 'react';
 import { Card } from 'primereact/card';
 import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
-import { AuthContext } from '../../contexts/AuthContext.ts';
+import { AuthContext } from '../../contexts/AuthContext';
 import './LoginPage.css';
-import { FloatLabel } from "primereact/floatlabel";
+import { FloatLabel } from 'primereact/floatlabel';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../hooks/useAuth';
 
 const LoginPage: React.FC = () => {
-    const { login } = useContext(AuthContext);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate(); // Initialisez le hook
+    const { login: loginContext } = useContext(AuthContext);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [localError, setLocalError] = useState('');
+    const navigate = useNavigate();
 
-    const handleLogin = () => {
-        if (!username.trim() || !password.trim()) {
-            setError('Username and password are required');
+    const { login, loading, error } = useAuth();
+
+    const handleLogin = async () => {
+        if (!name.trim() || !email.trim()) {
+            setLocalError('Le nom et l’email sont obligatoires');
             return;
         }
-        setError('');
-        // Appel de la fonction fake de login depuis le contexte
-        login(username);
-        navigate('/cards');
+        setLocalError('');
+        const user = await login(name, email);
+        if (user) {
+            loginContext(user);
+            navigate('/cards');
+        }
     };
 
     return (
@@ -33,22 +36,20 @@ const LoginPage: React.FC = () => {
             <Card title="Connexion" className="login-card">
                 <div className="card justify-content-center p-field">
                     <FloatLabel>
-                        <InputText id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                        <label htmlFor="username">Username</label>
+                        <InputText id="name" value={name} onChange={(e) => setName(e.target.value)} />
+                        <label htmlFor="name">Nom</label>
                     </FloatLabel>
                 </div>
                 <div className="card justify-content-center p-field">
                     <FloatLabel>
-                        <Password inputId="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        <label htmlFor="password">Password</label>
+                        <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <label htmlFor="email">Email</label>
                     </FloatLabel>
                 </div>
-                <div className="">
-                    <div className="error-container">
-                        {error && <small className="p-error">{error}</small>}
-                    </div>
-                    <Button label="Se connecter" icon="pi pi-sign-in" onClick={handleLogin} className="p-mt-2" />
+                <div className="error-container">
+                    {(localError || error) && <small className="p-error">{localError || error}</small>}
                 </div>
+                <Button label="Se connecter" icon="pi pi-sign-in" onClick={handleLogin} className="p-mt-2" disabled={loading} />
             </Card>
         </div>
     );

@@ -1,16 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
-
+import { useAlarm } from '../../hooks/useAlarm';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
+    const { scheduleAlarm, loading, error } = useAlarm();
 
-    // Ouvre une popup pour saisir l'heure et simuler la programmation d'une notif
-    const handleScheduleNotifications = () => {
+    // Ouvre une popup pour saisir l'heure et envoyer la valeur au back via le hook useAlarm
+    const handleScheduleNotifications = async () => {
         const time = window.prompt("Veuillez saisir l'heure (HH:MM) pour la notification du quiz du jour:");
         if (time) {
-            console.log(`Notification programmée à ${time}`);
+            try {
+                const data = await scheduleAlarm(time);
+                console.log(`Notification programmée à ${time}`, data);
+            } catch (err) {
+                console.error("Erreur lors de la programmation de la notification", err);
+            }
         }
     };
 
@@ -38,6 +44,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 onAddCard={handleAddCard}
             />
             <main>{children}</main>
+            {loading && <p>Programmation de la notification en cours...</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };
